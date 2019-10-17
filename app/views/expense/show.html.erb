@@ -1,0 +1,10 @@
+<h1> Show Expense</h1>
+
+<p>Project ID: <%= @project_id %>
+
+<% @data.Expenses.each do |expense| %>
+    <p>
+        <h4><%= expense.Firstname %></h4>
+    </p>
+<% end %>
+    

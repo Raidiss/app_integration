@@ -1,10 +1,7 @@
 <h1>Projects</h1>
 <% @data.Projects.each do |project| %>
     <p>
-        <h4>Proyect Title: <%= project.Title %></h4>
+        <h4><%= link_to project.Title, expense_path(project.ProjectID) %></h4>
     </p>
-    <p>
-         <%= link_to project.ProjectID %>
-   </p>
  <br>
 <% end %>
