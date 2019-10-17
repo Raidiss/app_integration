@@ -36,7 +36,7 @@ class AuthenticationController < ApplicationController
      end 
 
     #  redirect_to company_index_path
-     redirect_to expense_index_path
-
+    #  redirect_to expense_index_path
+    redirect_to project_index_path
    end
 end

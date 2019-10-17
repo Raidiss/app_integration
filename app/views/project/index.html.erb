@@ -1,0 +1,10 @@
+<h1>Projects</h1>
+<% @data.Projects.each do |project| %>
+    <p>
+        <h4>Proyect Title: <%= project.Title %></h4>
+    </p>
+    <p>
+         <%= link_to project.ProjectID %>
+   </p>
+ <br>
+<% end %>
