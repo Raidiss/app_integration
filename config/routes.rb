@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get 'expense/index'
   get 'company/index'
   get 'home/index'
   get 'authentication/index'

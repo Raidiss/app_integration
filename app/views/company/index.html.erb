@@ -1,3 +1,15 @@
-<h1>Company</h1>
-<%= @companies  %>
-
+<h1>Company</h1> 
+<% @data.Companies.each do |company| %>
+    <p>
+        <h4><%= company.CompanyName %></h4>
+    </p>
+        <% company.Contacts.each do |contact| %>
+            <p>
+                <%= "#{contact.Firstname} #{contact.Lastname}" %></h6>
+            </p>
+        <% end %>
+    <p>
+        <%= company.BillingAddress %>
+    </p>
+    <br>
+<% end %>
