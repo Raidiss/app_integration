@@ -1,7 +1,13 @@
-<h1>Projects</h1>
-<% @data.Projects.each do |project| %>
-    <p>
-        <h4><%= link_to project.Title, expense_path(project.ProjectID) %></h4>
-    </p>
- <br>
-<% end %>
+<p><%= link_to "switch to users list", user_index_path %></p>
+<h1>Project List:</h1>
+<table>                         
+  <tr>                          
+    <th>Project Title</th>
+  </tr>
+<% @data.Projects.each do |project| %>  
+  <tr>
+    <td><%= link_to project.Title, expense_path(project.ProjectID) %></td>
+  </tr>
+<% end %>                      
+</table>
+

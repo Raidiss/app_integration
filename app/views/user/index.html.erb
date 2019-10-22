@@ -1,0 +1,17 @@
+<h1>User List:</h1>
+<table>                         
+  <tr>                          
+    <th>User Name</th>
+  </tr>
+<% @users.each do |user| %>  
+  <tr>
+    <% 
+        name = "#{user.Firstname} #{user.Lastname}" 
+        if not user.PositionTitle.blank?
+            name += " (#{user.PositionTitle})"
+        end
+    %>
+    <td><%= link_to name, user_path(user.UserID) %></td>
+  </tr>
+<% end %>                      
+</table>

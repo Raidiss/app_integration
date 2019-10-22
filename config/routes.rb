@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
-  get 'project/index'
+  resources :user, only: [:index, :show]
+  get 'project/index' 
   resources :expense, only: [:index, :show]
   get 'company/index'
   get 'home/index'
