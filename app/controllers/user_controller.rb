@@ -68,18 +68,19 @@ class UserController < ApplicationController
       end  
 
       url = 'https://integrations.expensify.com/Integration-Server/ExpensifyIntegrations'
-      @payload = 'requestJobDescription= {
-        "type":"create",
-        "credentials":{
-            "partnerUserID": "aa_avaza_liquidconsulting_com",
-            "partnerUserSecret": "4d618b69d544a7773ed0b4beeb1f1a0eea989138"
+      data = {
+        'type': 'create',
+        'credentials': {
+            'partnerUserID': 'aa_avaza_liquidconsulting_com',
+            'partnerUserSecret': '4d618b69d544a7773ed0b4beeb1f1a0eea989138'
         },
-        "inputSettings":{
-          "type":"expenses",
-          "employeeEmail": "'+ @email +'",
-          "transactionList": transactions
+        'inputSettings': {
+          'type': 'expenses',
+          'employeeEmail': @email,
+          'transactionList': transactions
         }
-    }'
+      }.to_json
+      @payload = "requestJobDescription= #{data}"
 
     @results = RestClient.post(url, @payload)
   end   
