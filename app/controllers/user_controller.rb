@@ -42,8 +42,11 @@ class UserController < ApplicationController
     end
 
     def export_expenses
+      
       @expenses.each do |expense|
-        @list = [merchant => expense.Firstname, created => expense.DateCreated, amount => expense.Amount]
+        Date createdAt = expense.DateCreated.to_date
+        dateStr = createdAt.strftime("%Y-%m-%d")
+        @list = [merchant => expense.Merchant, created => dateStr , amount => (expense.Amount * 100).to_i, currency =>expense.CurrencyCode, externalID => expense.ExpenseID, category => expense.ExpenseCategoryName]
       end  
 
       url = 'https://integrations.expensify.com/Integration-Server/ExpensifyIntegrations'
