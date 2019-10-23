@@ -14,22 +14,11 @@ class UserController < ApplicationController
 
   def show
     @user_id = params[:id].to_i
-    @users = get_users
-    @email = nil
-    @users.each do |user|
-      if user.UserID == @user_id
-        @email = URI.encode(user.Email)
-      end 
-    end
-    if not @email.blank?
-      start_date = URI.encode(5.days.ago.beginning_of_day.utc.strftime("%Y-%m-%dT%H:%M:%S.%LZ"))
-      end_date = URI.encode(1.days.ago.end_of_day.utc.strftime("%Y-%m-%dT%H:%M:%S.%LZ"))
-      authentication = Authentication.find_by(token_id: TOKEN_ID)
-      url = "https://api.avaza.com/api/Expense?UserEmail=#{@email}&ExpenseDateFrom=#{start_date}&ExpenseDateTo=#{end_date}"
-      headers = {Authorization: "Bearer #{authentication.access_token}"}
-      data = JSON.parse(RestClient.get(url, headers), object_class: OpenStruct)
-      @expenses = data.Expenses
-    end
+    @expenses = get_expenses(@user_id)
+  end
+
+  def export
+    @respose = export_expenses
   end
 
   private
@@ -41,31 +30,59 @@ class UserController < ApplicationController
       data.Users
     end
 
+    def get_expenses(id)
+      @users = get_users
+      @email = nil
+      @users.each do |user|
+        if user.UserID == id
+          @email = URI.encode(user.Email)
+        end 
+      end
+      expenses = []
+      if not @email.blank?
+        start_date = URI.encode(5.days.ago.beginning_of_day.utc.strftime("%Y-%m-%dT%H:%M:%S.%LZ"))
+        end_date = URI.encode(1.days.ago.end_of_day.utc.strftime("%Y-%m-%dT%H:%M:%S.%LZ"))
+        authentication = Authentication.find_by(token_id: TOKEN_ID)
+        url = "https://api.avaza.com/api/Expense?UserEmail=#{@email}&ExpenseDateFrom=#{start_date}&ExpenseDateTo=#{end_date}"
+        headers = {Authorization: "Bearer #{authentication.access_token}"}
+        data = JSON.parse(RestClient.get(url, headers), object_class: OpenStruct)
+        expenses = data.Expenses
+      end
+    end
+
     def export_expenses
-      
+      @user_id = params[:id].to_i
+      @expenses = get_expenses(@user_id)
+      transactions = []
       @expenses.each do |expense|
-        Date createdAt = expense.DateCreated.to_date
+        createdAt = expense.DateCreated.to_date
         dateStr = createdAt.strftime("%Y-%m-%d")
-        @list = [merchant => expense.Merchant, created => dateStr , amount => (expense.Amount * 100).to_i, currency =>expense.CurrencyCode, externalID => expense.ExpenseID, category => expense.ExpenseCategoryName]
+        transactions << {
+          'merchant': expense.Merchant, 
+          'created': dateStr , 
+          'amount': (expense.Amount * 100).to_i, 
+          'currency': expense.CurrencyCode, 
+          'externalID': expense.ExpenseID, 
+          'category': expense.ExpenseCategoryName
+        }
       end  
 
       url = 'https://integrations.expensify.com/Integration-Server/ExpensifyIntegrations'
-      payload = {
-            requestJobDescription=>{
-                "type":"create",
-                "credentials":{
-                    "partnerUserID": "aa_avaza_liquidconsulting_com",
-                    "partnerUserSecret": "4d618b69d544a7773ed0b4beeb1f1a0eea989138"
-                }
-              },
-                inputSettings=> {
-                    "type":"expenses",
-                    "employeeEmail":"@email",
-                },
-            transactionList => @list
-      } 
-
-    @respose = RestClient.post(url, payload)
+      @payload = {
+        'requestJobDescription': {
+          'type': 'create',
+          'credentials': {
+              'partnerUserID': 'aa_avaza_liquidconsulting_com',
+              'partnerUserSecret': '4d618b69d544a7773ed0b4beeb1f1a0eea989138'
+          },
+          'inputSettings': {
+            'type': 'expenses',
+            'employeeEmail': @email,
+            'transactionList': transactions
+          }
+        }
+      }.to_json
+    @results = RestClient.post(url, @payload, {content_type: :json, accept: :json})
   end   
 
 end
