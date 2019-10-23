@@ -58,7 +58,7 @@ class UserController < ApplicationController
         createdAt = expense.DateCreated.to_date
         dateStr = createdAt.strftime("%Y-%m-%d")
         transactions << {
-          'merchant': expense.Merchant, 
+          'merchant': expense.Merchant || 'Unknown', 
           'created': dateStr , 
           'amount': (expense.Amount * 100).to_i, 
           'currency': expense.CurrencyCode, 
@@ -75,9 +75,15 @@ class UserController < ApplicationController
             'partnerUserSecret': '4d618b69d544a7773ed0b4beeb1f1a0eea989138'
         },
         'inputSettings': {
-          'type': 'expenses',
-          'employeeEmail': @email,
-          'transactionList': transactions
+          'type': 'report',
+          'policyID': '8901AD7F3A7696A2',
+          'report': {
+                'title': "Name of the report",
+                'fields':{
+                }
+            },
+          'employeeEmail': 'avaza@liquidconsulting.com',
+          'expenses': transactions
         }
       }.to_json
       @payload = "requestJobDescription= #{data}"
