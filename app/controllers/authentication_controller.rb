@@ -7,6 +7,7 @@ CLIENT_ID = 306
 CLIENT_SECRET = 'bc7764d2b566703f8c8b7abd3e4d8bcc36b1fad8'
 TOKEN_ID = 1234567890
 
+
 class AuthenticationController < ApplicationController
   def index
     code = request.query_parameters["code"]

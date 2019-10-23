@@ -6,6 +6,7 @@ require 'uri'
 
 TOKEN_ID = 1234567890
 
+
 class UserController < ApplicationController
   def index
     @users = get_users
@@ -39,4 +40,29 @@ class UserController < ApplicationController
       data = JSON.parse(RestClient.get(url, headers), object_class: OpenStruct)
       data.Users
     end
+
+    def export_expenses
+      @expenses.each do |expense|
+        @list = [merchant => expense.Firstname, created => expense.DateCreated, amount => expense.Amount]
+      end  
+
+      url = 'https://integrations.expensify.com/Integration-Server/ExpensifyIntegrations'
+      payload = {
+            requestJobDescription=>{
+                "type":"create",
+                "credentials":{
+                    "partnerUserID": "aa_avaza_liquidconsulting_com",
+                    "partnerUserSecret": "4d618b69d544a7773ed0b4beeb1f1a0eea989138"
+                }
+              },
+                inputSettings=> {
+                    "type":"expenses",
+                    "employeeEmail":"@email",
+                },
+            transactionList => @list
+      } 
+
+    @respose = RestClient.post(url, payload)
+  end   
+
 end
